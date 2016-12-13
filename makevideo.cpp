@@ -25,6 +25,7 @@ void on_record(int,void*);
 int savetriger = 0;
 
 int nor_fps = NOR_FPS; //Normal fps
+int ran_fps = RAN_FPS; //Normal fps
 int fps_rate = nor_fps/RAN_FPS; //How times ? (Nor/Ran)
 
 int main(int args, char **argv){
@@ -44,11 +45,12 @@ int main(int args, char **argv){
 	char load_name[NUM];
 
 	//Create the window
-	namedWindow("OpenCV",CV_WINDOW_AUTOSIZE);
+	namedWindow("KurumadaLAB",CV_WINDOW_AUTOSIZE);
 	int n_infps = nor_fps;
+	int r_infps = ran_fps;
 	int rate_infps = fps_rate;
-	cvCreateTrackbar("Normal Speed[fps]","OpenCV",&n_infps,1000,on_trackbar1);
-	cvCreateTrackbar("Ran Speed Down Rate[fps/fps]","OpenCV",&rate_infps,100,on_trackbar2);
+	cvCreateTrackbar("Normal Speed[fps]","KurumadaLAB",&n_infps,1000,on_trackbar1);
+	cvCreateTrackbar("Random Speed[fps]","KurumadaLAB",&r_infps,1000,on_trackbar2);
 	//cvCreateButton("Record",on_record,(void*)"test",CV_PUSH_BUTTON,0);
 
 	Mat img1;
@@ -76,8 +78,9 @@ int main(int args, char **argv){
 	int time = 0;
 	for(int i=0;i<num;i++){
 		ran_spf = 1000/nor_fps; //ex. Def_1000[fps] <--> Ran_10[fps]
-		img1 = images[i];
+		//img1 = images[i];
 		if(time % fps_rate == 0){
+			img1 = images[i];
 			r = getrnd(0,num-1);
 			time = 1;
 		}else{
@@ -90,13 +93,13 @@ int main(int args, char **argv){
 			Mat twoimg = Mat(img1.rows,img1.cols*2,img1.type());
 			vconcat(img1,img2,twoimg);
 			 
-			imshow("OpenCV",twoimg);
+			imshow("KurumadaLAB",twoimg);
 			
 			//cout<<img.size()<<" "<<img.channels()<<endl;
 			int key = waitKey(ran_spf);
 			if(key == 113) break; //q
 			if(key == 115){ //s
-				vw.open("polarbear_"+to_string(nor_fps)+","+to_string(nor_fps/fps_rate)+"_.avi",codec,nor_fps,Size(width,height*2),true);
+				vw.open("polarbear_"+to_string(nor_fps)+","+to_string(ran_fps)+"_.avi",codec,nor_fps,Size(width,height*2),true);
 				if(!vw.isOpened())
 					return -1;
 				recordtime = 0;
@@ -131,10 +134,16 @@ int getrnd(int min, int max){
 }
 
 void on_trackbar1(int val){
-	if(val>0) nor_fps = val;
+	if(val>0 && val>ran_fps){
+		nor_fps = val;
+		fps_rate = nor_fps/ran_fps;
+	}
 }
 void on_trackbar2(int val){
-	if(val>0) fps_rate = val;
+	if(val>0 && val<nor_fps){
+		ran_fps = val;
+		fps_rate = nor_fps/ran_fps;
+	}
 }
 
 void on_record(int state, void* userdata){

@@ -7,6 +7,7 @@ echo "||=================================================||"
 
 getopts y opts
 outdir="out/two/txt/and/"
+outdir_num="number/"
 
 #全自動
 case $opts in
@@ -18,8 +19,8 @@ case $opts in
 		read start
 		echo "動画の停止位置を入力してください(秒数)。"
 		read stop
-		echo "ベースとするフレームを入力してください。(整数)"
-		read num
+		echo "比較する色を選択してください。(1:白,0:黒)"
+		read bw
 		echo "重なり結果を出力するファイル名を入力してください。"
 		read resultname
 		echo "相関結果を出力するファイル名を入力してください。"
@@ -51,9 +52,9 @@ case $opts in
 		echo "out/two/txtディレクトリを確認してください。"
 		#3
 		echo "計算出力中・・・"
-		python3 andbw.py $num $resultname
-		tmp1="${outdir}${resultname}"
-		tmp2="${outdir}sort_${resultname}"
+		python3 andbw.py $resultname $bw
+		tmp1="${outdir_num}${resultname}"
+		tmp2="${outdir_num}sort_${resultname}"
 		cat $tmp1 | sort -R > $tmp2
 		echo "重なり計算が完了しました。"
 		echo "out/two/txt/andディレクトリを確認してください。"
@@ -139,14 +140,14 @@ echo "比較を行いますか？(y/n)"
 read s3
 if [ $s3 = "y" ]
 then
-	echo "ベースとするフレームを入力してください。(整数)"
-	read num
+	echo "比較する色を選択してください。(1:白,0:黒)"
+	read bw
 	echo "結果を出力するファイル名を入力してください。"
 	read resultname
 	echo "計算出力中・・・"
-	python3 andbw.py $num $resultname
-	tmp1="${outdir}${resultname}"
-	tmp2="${outdir}sort_${resultname}"
+	python3 andbw.py $resultname $bw
+	tmp1="${outdir_num}${resultname}"
+	tmp2="${outdir_num}sort_${resultname}"
 	cat $tmp1 | sort -R > $tmp2
 	echo "重なり計算が完了しました。"
 	echo "out/two/txt/andディレクトリを確認してください。"
